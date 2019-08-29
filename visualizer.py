@@ -1,14 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
+#일봉 차트를 그리기 위해서는 mpl_finance 모듈을 사용합니다.
 from mpl_finance import candlestick_ohlc
 
 
+## 가시화 모듈
+# 정책 신경망을 학습하는 과정에서 에이전트의 투자 상황, 정책 신경망의 투자 결정 상황
+# 포트 폴리오 가치의 상황을 시간에 따라 연속적으로 보여주기 위해 시각화 기능을 담당하는 가시화기 클래스를 가십니다.
 class Visualizer:
 
     def __init__(self):
         self.fig = None  # 캔버스 같은 역할을 하는 Matplotlib의 Figure 클래스 객체
         self.axes = None  # 차트를 그리기 위한 Matplotlib의 Axes 클래스 객체
 
+    #Figure를 초기화하고 일봉 차트를 출력
     def prepare(self, chart_data):
         # 캔버스를 초기화하고 4개의 차트를 그릴 준비
         self.fig, self.axes = plt.subplots(nrows=4, ncols=1, facecolor='w', sharex=True)
@@ -29,6 +34,7 @@ class Visualizer:
         # 양봉은 빨간색으로 음봉은 파란색으로 표시
         candlestick_ohlc(ax, ohlc, colorup='r', colordown='b')
 
+    #일봉 차트를 제외한 나머지 차트들을 출력
     def plot(self, epoch_str=None, num_epoches=None, epsilon=None, 
             action_list=None, actions=None, num_stocks=None, 
             outvals=None, exps=None, learning=None,
@@ -82,6 +88,7 @@ class Visualizer:
         plt.tight_layout()
         plt.subplots_adjust(top=.9)
 
+    #일봉 차트를 제외한 나머지 차트들을 초기화
     def clear(self, xlim):
         for ax in self.axes[1:]:
             ax.cla()  # 그린 차트 지우기
@@ -96,6 +103,6 @@ class Visualizer:
             ax.get_xaxis().get_major_formatter().set_scientific(False)  # 과학적 표기 비활성화
             ax.get_yaxis().get_major_formatter().set_scientific(False)  # 과학적 표기 비활성화
             ax.ticklabel_format(useOffset=False)  # x축 간격을 일정하게 설정
-            
+    #Figure를 그림파일로 저장
     def save(self, path):
         plt.savefig(path)
