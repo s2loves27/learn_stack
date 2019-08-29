@@ -161,7 +161,7 @@ class Agent:
             action = Agent.ACTION_HOLD
 
         # 환경에서 현재 가격 얻기
-        #현재 가격을 가져옵니다. (현재는 종가를 가져온다.)
+        # 현재 가격을 가져옵니다. (현재는 종가를 가져온다.)
         curr_price = self.environment.get_price()
 
         # 즉시 보상 초기화
