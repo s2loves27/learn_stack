@@ -11,8 +11,8 @@ class Agent:
     STATE_DIM = 2  # 주식 보유 비율, 포트폴리오 가치 비율
 
     # 매매 수수료 및 세금
-    TRADING_CHARGE = 0.015  # 거래 수수료 미고려 (일반적으로 0.015%)
-    TRADING_TAX = 0.3  # 거래세 미고려 (실제 0.3%)
+    TRADING_CHARGE = 0.00015  # 거래 수수료 미고려 (일반적으로 0.015%)
+    TRADING_TAX = 0.003  # 거래세 미고려 (실제 0.3%)
 
     # 행동
     ACTION_BUY = 0  # 매수
@@ -77,8 +77,11 @@ class Agent:
     # 이 비율은 현재 수익이 발생 했는지 아니면 손실이 발생 했는지 판단할 수 있는 값이 됩니다.
 
     def get_states(self):
-        self.ratio_hold = self.num_stocks / int(
-            self.portfolio_value / self.environment.get_price())
+        try:
+            self.ratio_hold = self.num_stocks / int(
+                self.portfolio_value / self.environment.get_price())
+        except:
+            pass
         self.ratio_portfolio_value = self.portfolio_value / self.base_portfolio_value
         # 튜플 = 튜플은 리스트 [a,b,...]와 비슷합니다. 차이점은 튜플은 요소를 추가, 변경, 삭제하는 처리가 불가능 하고 리스트는 가능하다.
         return (
