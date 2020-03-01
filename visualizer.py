@@ -57,6 +57,7 @@ class Visualizer:
         # 주의할 점은 다차원 배열의 경우 그 형태를 튜플로 넘겨줘야 한다는 것입니다.
         pvs_base = np.zeros(len(actions)) + initial_balance  # 초기 자본금 배열
 
+
         # 차트 2. 에이전트 상태 (행동, 보유 주식 수)
         colors = ['r', 'b']
         #zip()은 파이썬 내장 함수로 두 개의 배열에서 같은 인덱스의 요소를 순서대로 묶어 줍니다. 예를 들어서 zip([1,2,3],[4,5,6])은 [(1,4),(2,5),(3,6)]
@@ -64,9 +65,10 @@ class Visualizer:
             for i in x[actions == actiontype]:
                 #Matplotlib의 axvline()은 x축 위치에서 세로로 선을 긋는 함수입니다. 이 선의 색깔은 color 인자로, 선의 투명도를 alpha로 정해 줄 수 있습니다.
                 #여기서 매수 행동의 배경색을 빨간색, 매도 행동의 배경 색을 파란색으로 그립니다.
-                self.axes[1].axvline(i, color=color, alpha=0.1)  # 배경 색으로 행동 표시
+                self.axes[1].axvline(i, color=color, alpha=0.3)  # 배경 색으로 행동 표시
                 #Matplotlib의 plot()함수는 x축의 데이터, y축의 데이터, 차트의 스타일을 인자로 받습니다. -k 는 검정색 실선
         self.axes[1].plot(x, num_stocks, '-k')  # 보유 주식 수 그리기
+
 
         # 차트 3. 정책 신경망의 출력 및 탐험
         #exps 배열이 탐험을 수행한 x축 인덱스를 가지고 있습니다.
@@ -80,7 +82,7 @@ class Visualizer:
             elif outval.argmax() == 1:
                 color = 'b'  # 매도면 파란색
             # 행동을 빨간색 또는 파란색 배경으로 그리기
-            self.axes[2].axvline(idx, color=color, alpha=0.1)
+            self.axes[2].axvline(idx, color=color, alpha=0.3)
         styles = ['.r', '.b']
         for action, style in zip(action_list, styles):
             # 정책 신경망의 출력을 빨간색, 파란색 점으로 그리기
@@ -96,10 +98,10 @@ class Visualizer:
         # fill_between()함수는 x축 배열과 두개의 y축 배열을 입력으로 받습니다.
         # 두 개의 y축 배열의 같은 인덱스 위치의 값 사이에 색을 칠합니다.
         self.axes[3].fill_between(x, pvs, pvs_base,
-                                  where=pvs > pvs_base, facecolor='r', alpha=0.1)
+                                  where=pvs > pvs_base, facecolor='r', alpha=0.3)
         # 포트폴리오 가치가 초기 자본금보다 낮은 부분을 파란색으로 배경을 칠합니다 .
         self.axes[3].fill_between(x, pvs, pvs_base,
-                                  where=pvs < pvs_base, facecolor='b', alpha=0.1)
+                                  where=pvs < pvs_base, facecolor='b', alpha=0.3)
         # 포트폴리오 가치를 검정색 실선으로 그립니다.
         self.axes[3].plot(x, pvs, '-k')
         # 학습을 수행한 위치를 표시합니다.
@@ -107,9 +109,9 @@ class Visualizer:
         for learning_idx, delayed_reward in learning:
             # 학습 위치를 초록색으로 그리기
             if delayed_reward > 0:
-                self.axes[3].axvline(learning_idx, color='r', alpha=0.1)
+                self.axes[3].axvline(learning_idx, color='r', alpha=0.3)
             else:
-                self.axes[3].axvline(learning_idx, color='b', alpha=0.1)
+                self.axes[3].axvline(learning_idx, color='b', alpha=0.3)
 
         # 에포크 및 탐험 비율
         # 파이썬에서 문자열에 값을 넣어주는 방법으로 %를 사용할 수 있습니다. 문자열 내에서 %s는 문자열을 %d는 정수 입니다.

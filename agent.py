@@ -1,6 +1,5 @@
 #v - 1
-#as를 사용하면 키워드를 지정할 수 있습니다.
-#지금은 np.xxx이런식으로 사용이 가능합니다.
+# 주식을 매도, 매수 하는 투자자 역할
 import numpy as np
 
 ##투자 행동을 수행하고 투자금과 보유주식을 관리하기 위한 에이전트 클래스(Agent)를 가진다.
@@ -43,6 +42,7 @@ class Agent:
         self.balance = 0  # 현재 현금 잔고
         self.num_stocks = 0  # 보유 주식 수
         self.portfolio_value = 0  # balance + num_stocks * {현재 주식 가격}
+        ## 어떡해 사용? ##
         self.base_portfolio_value = 0  # 직전 학습 시점의 PV
         self.num_buy = 0  # 매수 횟수
         self.num_sell = 0  # 매도 횟수
@@ -50,7 +50,7 @@ class Agent:
         self.immediate_reward = 0  # 즉시 보상 #수익이 발생한 상태면 1 아니면 -1
 
         # Agent 클래스의 상태
-        self.ratio_hold = 0  # 주식 보유 비율: 최대로 보유할 수 있는 주식 수 대비 현재 보유하고 있는 주식 수의 비율.
+        self.ratio_hold = 0  # 주식 보유 비율: 최대로 보유할 수 있는 주식 수 대비 현재 보유하고 있는 주식 수의 비율. - 너무 많으면 매도, 너무 적으면 매수 관점
         self.ratio_portfolio_value = 0  # 포트폴리오 가치 비율: 직전 지연 보상이 발생했을 때의 포트 폴리오 가치 대비 현재 포트 폴리오 가치
 
     #Agent 클래스 속성들을 초기화해 줍니다. 학습 단계에서 한 에포크마다 에이전트의 상태를 초기화 해야합니다.
@@ -75,7 +75,6 @@ class Agent:
     # 이 비율을 보고 투자 행동 결정을 하기 됩니다. (ratio_hold)
     # 2.포트폴리오 가치 비율 = 포트폴리오 가치/ 기준 포트폴리오 가치
     # 이 비율은 현재 수익이 발생 했는지 아니면 손실이 발생 했는지 판단할 수 있는 값이 됩니다.
-
     def get_states(self):
         try:
             self.ratio_hold = self.num_stocks / int(
@@ -93,7 +92,7 @@ class Agent:
     def decide_action(self, policy_network, sample, epsilon):
         confidence = 0.
         # 탐험 결정
-        # 0 ~ 1 사이의 랜덤 값을 생성하고 이 값이 렙실론보다 작으면 무작위로 행동을 결정합니다. 여기서 self.NUMACTIONsms 2의 값을 가집니다.
+        # 0 ~ 1 사이의 랜덤 값을 생성하고 이 값이 렙실론보다 작으면 무작위로 행동을 결정합니다. 여기서 self.NUMACTION 2의 값을 가집니다.
         # 따라서 무작위로 행동을 결정하면 0(매수) 또는 1(매도)의 값을 결정하는 것입니다.
         if np.random.rand() < epsilon:
             exploration = True
@@ -124,6 +123,7 @@ class Agent:
     ## 파이썬에서 위치는 0 부터 시작합니다.
     ##################################################################
 
+    # 최소 매수, 매도 확인.
     # 여기서에는 매수시 금액이 있는지 확인하고
     # 매도시 주식이 있는지 확인합니다.
     # 여기에 세금 부분이 들어 가지를 않아서 추가했습니다.
@@ -143,6 +143,7 @@ class Agent:
 
     # 정책 신경망이 결정한 행동의 확률이 높을수록 매수 or 매도 하는 단위를 크게 정해 줍니다.
     # 높은 확률로 매수를 결정 했으면 그에 맞게 더 많은 주식을 매수하고 높은 확률로 매도를 결정 했으면 더 많은 보유 주식을 매도하는 것입니다.
+    # confidence가 1보다 클수가 있나?
     def decide_trading_unit(self, confidence):
         ##확률이 낮으면 1개만 산다.
         if np.isnan(confidence):
@@ -168,7 +169,7 @@ class Agent:
         curr_price = self.environment.get_price()
 
         # 즉시 보상 초기화
-        #보상은 에이전트가 행동 할 때마다 결정되기 때문에 행동을 시작하면 초기화를 먼저 해줘야 합니다.
+        # 보상은 에이전트가 행동 할 때마다 결정되기 때문에 행동을 시작하면 초기화를 먼저 해줘야 합니다.
         self.immediate_reward = 0
 
         ##################################################################

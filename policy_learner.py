@@ -27,6 +27,7 @@ class PolicyLearner:
                  delayed_reward_threshold=.05, lr=0.01):
         self.stock_code = stock_code  # 종목코드
         self.chart_data = chart_data
+
         # 인자로 받은 chart_data는 Environment 클래스 객체를 생성 할때 넣어줍니다.
         # Environment 클래스는 차트데이터를 순서대로 읽으면서 주가,거래량 등의 환경을 제공합니다
         self.environment = Environment(chart_data)  # 환경 객체
@@ -50,6 +51,7 @@ class PolicyLearner:
     # 학습 데이터를 다시 처음부터 읽기 위해서 self.training_data_idx를 -1로 재 설정합니다.
     # 학습 데이터를 읽어 가면서 이 값은 1씩 증가 합니다. 읽어온 데이터는 self.sample에 저장되는데
     # 초기화 단계에서는 읽어온 학습데이터가 없기 때문에 None으로 할당합니다.
+
     def reset(self):
         self.sample = None
         self.training_data_idx = -1

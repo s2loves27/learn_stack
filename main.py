@@ -63,7 +63,7 @@ if __name__ == '__main__':
     # 정책 학습기를 생성하는 부분 - 이때 종목 코드, 차트 데이터, 학습 데이터, 최소 투자 단위, 최대 투자 단위, 지연 보장 임계치, 학습 속도를 정해 줍니다.
     policy_learner = PolicyLearner(
         stock_code=stock_code, chart_data=chart_data, training_data=training_data,
-        min_trading_unit=1, max_trading_unit=50, delayed_reward_threshold=.2, lr=.001)
+        min_trading_unit=0, max_trading_unit=2, delayed_reward_threshold=.2, lr=.001)
     # 생성한 정책 학습기 객체의 fit() 함수를 호출 합니다. 이때 초기 자본금, 수행할 에포크 수, 할인 요인, 초기 탐험률을 정해 줍니다.
     policy_learner.fit(balance=10000000, num_epoches=1000,
                        discount_factor=0, start_epsilon=.5)

@@ -51,15 +51,18 @@ def build_training_data(prep_data):
     training_data['high_close_ratio'] = \
         (training_data['high'].values - training_data['close'].values) / \
         training_data['close'].values
+
     # 저가/종가 비율
     training_data['low_close_ratio'] = \
         (training_data['low'].values - training_data['close'].values) / \
         training_data['close'].values
+
     # 종가 / 전일종가 비율
     training_data['close_lastclose_ratio'] = np.zeros(len(training_data))
     training_data.loc[1:, 'close_lastclose_ratio'] = \
         (training_data['close'][1:].values - training_data['close'][:-1].values) / \
         training_data['close'][:-1].values
+
     # 거래량 / 전일 거래량 비율 -- 거래량 값이 0이면 이전의 0이 아닌 값으로 바꾸어 줍니다.
     training_data['volume_lastvolume_ratio'] = np.zeros(len(training_data))
     training_data.loc[1:, 'volume_lastvolume_ratio'] = \
