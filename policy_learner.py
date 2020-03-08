@@ -6,6 +6,8 @@ import locale
 import logging
 # 배열 자료구조를 조작하고, 저장 불러오기를 위해서 사용합니다.
 import numpy as np
+
+#setting -- 투자 설정, 로길 설정 등을 하기 위한 모듈로서 여러 상수 값들을 포함 합니다.
 import settings
 from environment import Environment
 from agent import Agent
@@ -26,12 +28,14 @@ class PolicyLearner:
                  min_trading_unit=1, max_trading_unit=2,
                  delayed_reward_threshold=.05, lr=0.01):
         self.stock_code = stock_code  # 종목코드
-        self.chart_data = chart_data
+        self.chart_data = chart_data # 종목에 관련된 chart_data.
 
         # 인자로 받은 chart_data는 Environment 클래스 객체를 생성 할때 넣어줍니다.
-        # Environment 클래스는 차트데이터를 순서대로 읽으면서 주가,거래량 등의 환경을 제공합니다
+        # Environment 클래스는 차트데이터를 순서대로 읽으면서 주가,거래량 등의 환경을 제공합니다.
+        # Environment 에 넣어서 미래의 데이터를 학습에서 적용시키지 않게 한다.-- [현재 값을 보고 예측]
         self.environment = Environment(chart_data)  # 환경 객체
         # 에이전트 객체
+        # delayed_reward_threshold - 자연 보상 임계치.
         self.agent = Agent(self.environment,
                            min_trading_unit=min_trading_unit,
                            max_trading_unit=max_trading_unit,
@@ -44,6 +48,7 @@ class PolicyLearner:
         # 예를 들어 1차원 배열의 shape는 1차원 튜플, 2차원 배열의 shape는 2차원 튜플입니다.
         self.num_features = self.training_data.shape[1] + self.agent.STATE_DIM
         #학습에 사용할 최종 특징 개수는 학습 데이터에 포함된 15개의 특징과 에이전트의 상태인 2개 특징을 더해서 17개 입니다.
+        #output은 산다/판다 -- 두가지.
         self.policy_network = PolicyNetwork(
             input_dim=self.num_features, output_dim=self.agent.NUM_ACTIONS, lr=lr)
         self.visualizer = Visualizer()  # 가시화 모듈
@@ -105,6 +110,7 @@ class PolicyLearner:
         epoch_summary_dir = os.path.join(
             settings.BASE_DIR, 'epoch_summary/%s/epoch_summary_%s' % (
                 self.stock_code, settings.timestr))
+
         # os.path 모듈에는 경로와 관련된 다양한 함수들이 있습니다. os.path.isdir(path) 함수는 path가 존재하고 폴더인지 확인합니다.
         # os.path.isfile(path)는 path가 존재하는 파일인지 확인합니다.
         # os.mkdirs(path) 함수는 path에 포함된 폴더들이 없을 경우 생성해 줍니다. path가 "/a/b/c"이고 현재 '/a'라는 경로만 존재한다면
@@ -163,8 +169,8 @@ class PolicyLearner:
             # 학습을 진행할 수록 탐험 비율 감소
             # start_epsilon값에 현재 epoch수에 학습 진행률을 곱해서 정합니다.
             # 예를 들어, start_epsilon이 0.3이면 첫번째 에포크에서 30% 확률로 무작위 투자를 진행합니다.
-            # 수행할 에포크 수가 100이라고 했을 때 50번째 에포크에서는 0.3 * (1-49/99) = 0.51이 됩니다.
-            # 에포크가 진행될수록 무작위 투자 비율은 증가 한다.
+            # 수행할 에포크 수가 100이라고 했을 때 50번째 에포크에서는 0.3 * (1-49/99) = 0.15이 됩니다.
+            # 에포크가 진행될수록 무작위 투자 비율은 감소 한다.
             if learning:
                 epsilon = start_epsilon * (1. - float(epoch) / (num_epoches - 1))
             else:
@@ -193,7 +199,7 @@ class PolicyLearner:
                 # 위의 함수에서 결정한 행동을 수행하도록 하는 구문입니다.
                 immediate_reward, delayed_reward = self.agent.act(action, confidence)
 
-                #밑의 메모리 변수들은 1. 학습에서 배치 학습데이터로 사용되고 2. 가시화기에서 차트를 그릴 때 사용합니다.
+                # 밑의 메모리 변수들은 1. 학습에서 배치 학습데이터로 사용되고 2. 가시화기에서 차트를 그릴 때 사용합니다.
 
                 # 행동 및 행동에 대한 결과를 기억
                 memory_sample.append(next_sample)
@@ -208,7 +214,7 @@ class PolicyLearner:
                     memory_reward[i])
                     for i in list(range(len(memory_action)))[-max_memory:]
                 ]
-                #무작위 투자를 경정한 경우에 현재 index를 memory_exp_idx에 저장합니다.
+                # 무작위 투자를 경정한 경우에 현재 index를 memory_exp_idx에 저장합니다.
                 # memory_prob은 정책 신경망의 출력을 그래도 저장하는 배열입니다.
                 # 무작위 추자에서는 정책 신경망의 출력이 없기 때문에 NumPy의 Not A Number을 값으로 넣어 줍니다.
                 if exploration:
@@ -224,7 +230,7 @@ class PolicyLearner:
                 itr_cnt += 1
                 # 무작위 투자 횟수
                 exploration_cnt += 1 if exploration else 0
-                # 수익이 발생한 횟수
+                # 수익이 발생한 횟수 -- 틀린거 같음.
                 win_cnt += 1 if delayed_reward > 0 else 0
 
                 # 학습 모드이고 지연 보상이 존재할 경우 정책 신경망 갱신

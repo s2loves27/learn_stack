@@ -106,7 +106,7 @@ class Agent:
             ##만들어 놓은 policy_network 클래스의 predict을 사용하여 각 행동에 대한 확률을 구해온다
             probs = policy_network.predict(sample)  # 각 행동에 대한 확률
             ## 각 행동들의 확률중 가장 큰값을 찾아서 행동을 결정합니다.
-            action = np.argmax(probs)
+            action = np.argmax(probs) if np.max(probs) >= 0.1 else Agent.ACTION_HOLD
             confidence = probs[action]
         return action, confidence, exploration
 

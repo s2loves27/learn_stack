@@ -42,11 +42,12 @@ def build_training_data(prep_data):
     # 시가/ 전일 종가 비율을 구합니다. 첫번째 행은 전일 값이 없거나 그 값이 있더라도 알 수 없기 때문에 전일 대비 종가 비율을 구하지 못합니다.
     # 그래서 두번째 행부터 마지막 행 까지 'open_lastclose_ratio' 열에 시가/전일 종가 비율을 저장합니다.
     # 시가/전일종가 비율을 구하는 방식은 현재 시가에 전일 종가 를 빼고 전일 종가로 나누어 주는 것입니다.
-    # [:-1] 은 처음부터 마지막 요소 까지는 말 하는거 같음.
+    # [:-1] 은 처음부터 마지막 요소 전까지는 말 하는거 같음.
     training_data['open_lastclose_ratio'] = np.zeros(len(training_data))
     training_data.loc[1:, 'open_lastclose_ratio'] = \
         (training_data['open'][1:].values - training_data['close'][:-1].values) / \
         training_data['close'][:-1].values
+
     #고가/종가 비율
     training_data['high_close_ratio'] = \
         (training_data['high'].values - training_data['close'].values) / \
